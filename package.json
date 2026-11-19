@@ -59,7 +59,6 @@
       "proxy-addr@<2.0.8": "2.0.8"
     },
     "patchedDependencies": {
-      "@mercuryworkshop/bare-mux@2.1.9": "patches/@mercuryworkshop__bare-mux@2.1.9.patch"
     }
   }
 }
