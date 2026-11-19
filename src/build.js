@@ -474,7 +474,7 @@ function applyScramjetProtocolKeys(source, protocolKeys) {
 }
 
 const BAREMUX_STRING_DEFAULTS = ["bare-mux-worker-", "bare-mux-worker", "bare-mux-remote", "bare-mux-path", "bare-mux", "baremuxinit"];
-const BAREMUX_STRING_COUNTS = { "uv.bundle": 14, "uv.client": 17, "uv.handler": 1, "sj.all": 19, baremux: 17, "baremux.worker": 4 };
+const BAREMUX_STRING_COUNTS = { "uv.bundle": 14, "uv.client": 17, "uv.handler": 1, "sj.all": 19, baremux: 16, "baremux.worker": 4 };
 
 function createBaremuxStrings() {
   const token = randomBytes(4).toString("hex");
