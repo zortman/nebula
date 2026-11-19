@@ -737,27 +737,8 @@ function themeChange(selectElement) {
 }
 
 function openAboutBlank() {
-  let inFrame;
-  try {
-    inFrame = window !== top && !isOwnShell();
-  } catch {
-    inFrame = true;
-  }
-
-  if (inFrame) {
-    alert("Please open the settings page directly (not inside a frame) to use the AB popup.");
-    return;
-  }
-  if (navigator.userAgent.includes("Firefox")) {
-    alert("AB сlоak is not supported in Firefox.");
-    return;
-  }
-
-  const popup = open("about:blank", "_blank");
-  if (!popup || popup.closed) {
-    alert("Window blocked. Please allow popups for this site.");
-    return;
-  }
+  return;
+}
 
   const name = store.get("name") || "My Drive - Google Drive";
   const icon = store.get("icon") || "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
