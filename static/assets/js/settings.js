@@ -736,10 +736,6 @@ function themeChange(selectElement) {
   window.applyTheme?.(value);
 }
 
-function openAboutBlank() {
-  return;
-}
-
   const name = store.get("name") || "My Drive - Google Drive";
   const icon = store.get("icon") || "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
   const panicLink = reconstructNavigationUrl(store.get("pLink")) ?? getRandomURL();
