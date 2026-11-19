@@ -216,8 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
   bgDropdown.value = savedBgMode;
   gradientDropdown.value = store.get("gradientStyle") || "multi";
   bgBlur.value = savedBlur;
-  bgBlurValue.value = `${savedBlur}%`;
-  bgBlurValue.textContent = `${savedBlur}%`;
+  bgBlurValue.value = ${savedBlur}%;
+  bgBlurValue.textContent = ${savedBlur}%;
   bgCustomRow.dataset.open = savedImageMode === "custom" ? "true" : "false";
   if (savedImageMode === "custom") bgInput.value = savedBg && savedBg !== "none" ? savedBg : "";
 
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bgCustomRow.style.display = bgCustomRow.dataset.open === "true" ? "" : "none";
     if (url) {
       document.body.dataset.customBackground = "true";
-      document.body.style.setProperty("--custom-background-image", `url('${url}')`);
+      document.body.style.setProperty("--custom-background-image", url('${url}'));
     } else {
       delete document.body.dataset.customBackground;
       document.body.style.removeProperty("--custom-background-image");
@@ -310,8 +310,8 @@ applyBackgroundImage();
 bgBlur.addEventListener("input", () => {
 store.set("backgroundBlur", bgBlur.value);
 bgBlurValue.value = ${bgBlur.value}%;
+bgBlurValue.value = ${bgBlur.value}%;
 bgBlurValue.textContent = ${bgBlur.value}%;
-document.body.style.setProperty("--background-blur", bgBlur.value);
 });
 document.getElementById("save-button").addEventListener("click", () => {
 const url = bgInput.value.trim();
