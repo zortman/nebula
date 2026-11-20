@@ -436,16 +436,16 @@ particlesCustomPanel.style.display = "none";
 return;
 }
 for (const [key, label, min, max, step, fallback] of controls) {
-const id = particle-${mode}-${key}.replace(/[^a-z0-9-]/gi, "-");
-const storageKey = particle_${mode}_${key};
-const rawValue = store.get(storageKey);
-const storedValue = Number(rawValue);
-const value = rawValue !== undefined && rawValue !== null && rawValue !== "" && Number.isFinite(storedValue) ? storedValue : fallback;
-const labelElement = document.createElement("label");
-labelElement.htmlFor = id;
-labelElement.textContent = label + " ";
-const output = document.createElement("output");
-output.id = ${id}-value;
+  const id = `particle-${mode}-${key}`.replace(/[^a-z0-9-]/gi, "-");
+  const storageKey = `particle_${mode}_${key}`;
+  const rawValue = store.get(storageKey);
+  const storedValue = Number(rawValue);
+  const value = rawValue !== undefined && rawValue !== null && rawValue !== "" && Number.isFinite(storedValue) ? storedValue : fallback;
+  const labelElement = document.createElement("label");
+  labelElement.htmlFor = id;
+  labelElement.textContent = label + " ";
+  const output = document.createElement("output");
+  output.id = `${id}-value`;
 output.textContent = value;
 labelElement.appendChild(output);
 const input = document.createElement("input");
