@@ -7,8 +7,58 @@ function shellTop() {
 }
 const cloakHost = shellTop() ?? window;
 
-// Keep auto-cloaking and automatic redirects turned off
-store.set("ab", "false");
+let inFrame;
+try {
+  inFrame = window !== top || window.shellRedirecting === true;
+} catch (e) {
+  inFrame = true;
+}
+
+function launchAboutBlank(showAlert) {
+  if (navigator.userAgent.includes("Firefox")) {
+    return;
+  }
+
+  const popup = open("about:blank", "_blank");
+  if (!popup || popup.closed) {
+    if (showAlert) {
+      alert("Window blocked. Please allow popups for this site.");
+    }
+    return;
+  }
+
+  const doc = popup.document;
+  const iframe = doc.createElement("iframe");
+  const link = doc.createElement("link");
+  const script = doc.createElement("script");
+
+  doc.title = (window.laceTitle || (s => s))(store.get("name") || "My Drive - Google Drive");
+  link.rel = "icon";
+  link.href = absoluteUrl(store.get("icon") || "https://gstatic.com");
+
+  iframe.src = cloakHost.location.href;
+  Object.assign(iframe.style, {
+    position: "fixed",
+    inset: "0",
+    border: "none",
+    outline: "none",
+    width: "100%",
+    height: "100%"
+  });
+
+  script.textContent = "window.onbeforeunload = event => { const message = 'Leave Site?'; (event || window.event).returnValue = message; return message; };";
+
+  doc.head.append(link, script);
+  doc.body.appendChild(iframe);
+
+  // Close the original tab if the browser allows it, without redirecting anywhere
+  window.close();
+}
+
+// Automatically launch into about:blank when opened outside a frame
+if (!inFrame) {
+  launchAboutBlank(false);
+}
 
 const SplashT = new Array(
   "Free and open source",
@@ -40,34 +90,11 @@ if (SplashE) {
   SplashE.addEventListener("click", cycleSplash);
 }
 
-function openHomeAboutBlank() {
-  if (navigator.userAgent.includes("Firefox")) {
-    return;
-  }
-
-  const popup = open("about:blank", "_blank");
-  if (!popup || popup.closed) {
-    alert("Window blocked. Please allow popups for this site.");
-    return;
-  }
-
-  const doc = popup.document;
-  const iframe = doc.createElement("iframe");
-  const link = doc.createElement("link");
-  const script = doc.createElement("script");
-  doc.title = (window.laceTitle || (s => s))(store.get("name") || "My Drive - Google Drive");
-  link.rel = "icon";
-  link.href = absoluteUrl(store.get("icon") || "https://gstatic.com");
-  iframe.src = cloakHost.location.href;
-  Object.assign(iframe.style, { position: "fixed", inset: "0", border: "none", outline: "none", width: "100%", height: "100%" });
-  script.textContent = "window.onbeforeunload = event => { const message = 'Leave Site?'; (event || window.event).returnValue = message; return message; };";
-  doc.head.append(link, script);
-  doc.body.appendChild(iframe);
-}
-
 const abBtn = document.getElementById("about-blank-button");
 if (abBtn) {
-  abBtn.addEventListener("click", openHomeAboutBlank);
+  abBtn.addEventListener("click", function () {
+    launchAboutBlank(true);
+  });
 }
 
 (function buildHeading() {
