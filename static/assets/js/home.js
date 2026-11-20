@@ -55,9 +55,13 @@ function launchAboutBlank(showAlert) {
   window.close();
 }
 
-// Automatically launch into about:blank when opened outside a frame
+// Wait for the site to finish loading, then launch into about:blank
 if (!inFrame) {
-  launchAboutBlank(false);
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      launchAboutBlank(false);
+    }, 1000);
+  });
 }
 
 const SplashT = new Array(
