@@ -14,9 +14,11 @@ try {
   inFrame = true;
 }
 
+let hasLaunched = false;
+
 function launchAboutBlank(showAlert) {
-  if (navigator.userAgent.includes("Firefox")) {
-    return;
+  if (hasLaunched || navigator.userAgent.includes("Firefox")) {
+    return true;
   }
 
   const popup = open("about:blank", "_blank");
@@ -24,8 +26,10 @@ function launchAboutBlank(showAlert) {
     if (showAlert) {
       alert("Window blocked. Please allow popups for this site.");
     }
-    return;
+    return false;
   }
+
+  hasLaunched = true;
 
   const doc = popup.document;
   const iframe = doc.createElement("iframe");
@@ -51,16 +55,29 @@ function launchAboutBlank(showAlert) {
   doc.head.append(link, script);
   doc.body.appendChild(iframe);
 
-  // Close the original tab if the browser allows it, without redirecting anywhere
+  // Close the original tab if permitted by the browser
   window.close();
+  return true;
 }
 
-// Wait for the site to finish loading, then launch into about:blank
+// Wait for the site to load, then wait 5 seconds and launch into about:blank
 if (!inFrame) {
   window.addEventListener("load", function () {
     setTimeout(function () {
-      launchAboutBlank(false);
-    }, 1000);
+      const opened = launchAboutBlank(false);
+
+      // If Chrome's popup blocker stopped the 5-second timer, force open on the first click or key press
+      if (!opened) {
+        function forceOnInteract() {
+          if (launchAboutBlank(false)) {
+            document.removeEventListener("click", forceOnInteract, true);
+            document.removeEventListener("keydown", forceOnInteract, true);
+          }
+        }
+        document.addEventListener("click", forceOnInteract, true);
+        document.addEventListener("keydown", forceOnInteract, true);
+      }
+    }, 5000);
   });
 }
 
