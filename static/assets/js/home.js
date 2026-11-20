@@ -15,6 +15,36 @@ try {
 }
 
 let hasLaunched = false;
+let noticeBanner = null;
+
+function removeBanner() {
+  if (noticeBanner && noticeBanner.parentNode) {
+    noticeBanner.parentNode.removeChild(noticeBanner);
+    noticeBanner = null;
+  }
+}
+
+function showBlockedBanner() {
+  if (hasLaunched || noticeBanner || !document.body) return;
+  noticeBanner = document.createElement("div");
+  noticeBanner.textContent = "Pop-ups are blocked — click anywhere on the page to open in about:blank";
+  Object.assign(noticeBanner.style, {
+    position: "fixed",
+    top: "12px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    background: "#111827",
+    color: "#ffffff",
+    padding: "10px 18px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontFamily: "sans-serif",
+    zIndex: "999999",
+    cursor: "pointer",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
+  });
+  document.body.appendChild(noticeBanner);
+}
 
 function launchAboutBlank(showAlert) {
   if (hasLaunched || navigator.userAgent.includes("Firefox")) {
@@ -30,6 +60,7 @@ function launchAboutBlank(showAlert) {
   }
 
   hasLaunched = true;
+  removeBanner();
 
   const doc = popup.document;
   const iframe = doc.createElement("iframe");
@@ -60,22 +91,25 @@ function launchAboutBlank(showAlert) {
   return true;
 }
 
-// Wait for the site to load, then wait 5 seconds and launch into about:blank
 if (!inFrame) {
   window.addEventListener("load", function () {
     setTimeout(function () {
       const opened = launchAboutBlank(false);
 
-      // If Chrome's popup blocker stopped the 5-second timer, force open on the first click or key press
       if (!opened) {
+        showBlockedBanner();
+
         function forceOnInteract() {
           if (launchAboutBlank(false)) {
-            document.removeEventListener("click", forceOnInteract, true);
-            document.removeEventListener("keydown", forceOnInteract, true);
+            window.removeEventListener("pointerdown", forceOnInteract, true);
+            window.removeEventListener("click", forceOnInteract, true);
+            window.removeEventListener("keydown", forceOnInteract, true);
           }
         }
-        document.addEventListener("click", forceOnInteract, true);
-        document.addEventListener("keydown", forceOnInteract, true);
+
+        window.addEventListener("pointerdown", forceOnInteract, true);
+        window.addEventListener("click", forceOnInteract, true);
+        window.addEventListener("keydown", forceOnInteract, true);
       }
     }, 5000);
   });
