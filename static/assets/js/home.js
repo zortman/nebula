@@ -7,9 +7,9 @@ function shellTop() {
 }
 const cloakHost = shellTop() ?? window;
 
-let inFrame;
+let inFrame = false;
 try {
-  inFrame = window !== top || window.shellRedirecting === true;
+  inFrame = window.self !== window.top || window.frameElement !== null || window.location.protocol === "about:";
 } catch (e) {
   inFrame = true;
 }
@@ -47,11 +47,11 @@ function showBlockedBanner() {
 }
 
 function launchAboutBlank(showAlert) {
-  if (hasLaunched || navigator.userAgent.includes("Firefox")) {
+  if (inFrame || hasLaunched || navigator.userAgent.includes("Firefox")) {
     return true;
   }
 
-  const popup = open("about:blank", "_blank");
+  const popup = window.open("about:blank", "_blank");
   if (!popup || popup.closed) {
     if (showAlert) {
       alert("Window blocked. Please allow popups for this site.");
@@ -63,6 +63,10 @@ function launchAboutBlank(showAlert) {
   removeBanner();
 
   const doc = popup.document;
+  doc.open();
+  doc.write("<!DOCTYPE html><html><head><title>My Drive - Google Drive</title></head><body style='margin:0;overflow:hidden;'></body></html>");
+  doc.close();
+
   const iframe = doc.createElement("iframe");
   const link = doc.createElement("link");
   const script = doc.createElement("script");
@@ -86,8 +90,6 @@ function launchAboutBlank(showAlert) {
   doc.head.append(link, script);
   doc.body.appendChild(iframe);
 
-  // Close the original tab if permitted by the browser
-  window.close();
   return true;
 }
 
