@@ -216,8 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
   bgDropdown.value = savedBgMode;
   gradientDropdown.value = store.get("gradientStyle") || "multi";
   bgBlur.value = savedBlur;
-  bgBlurValue.value = ${savedBlur}%;
-  bgBlurValue.textContent = ${savedBlur}%;
+bgBlurValue.value = `${savedBlur}%`;
+bgBlurValue.textContent = `${savedBlur}%`;
   bgCustomRow.dataset.open = savedImageMode === "custom" ? "true" : "false";
   if (savedImageMode === "custom") bgInput.value = savedBg && savedBg !== "none" ? savedBg : "";
 
@@ -309,9 +309,9 @@ applyBackgroundImage();
 });
 bgBlur.addEventListener("input", () => {
 store.set("backgroundBlur", bgBlur.value);
-bgBlurValue.value = ${bgBlur.value}%;
-bgBlurValue.value = ${bgBlur.value}%;
-bgBlurValue.textContent = ${bgBlur.value}%;
+bgBlurValue.value = `${bgBlur.value}%`;
+bgBlurValue.value = `${bgBlur.value}%`;
+bgBlurValue.textContent = `${bgBlur.value}%`;
 });
 document.getElementById("save-button").addEventListener("click", () => {
 const url = bgInput.value.trim();
