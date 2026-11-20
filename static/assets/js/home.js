@@ -9,7 +9,11 @@ const cloakHost = shellTop() ?? window;
 
 let inFrame = false;
 try {
-  inFrame = window.self !== window.top || window.frameElement !== null || window.location.protocol === "about:";
+  inFrame =
+    window.self !== window.top ||
+    window.frameElement !== null ||
+    window.location.protocol === "about:" ||
+    window.location.protocol === "blob:";
 } catch (e) {
   inFrame = true;
 }
@@ -27,7 +31,7 @@ function removeBanner() {
 function showBlockedBanner() {
   if (hasLaunched || noticeBanner || !document.body) return;
   noticeBanner = document.createElement("div");
-  noticeBanner.textContent = "Pop-ups are blocked — click anywhere on the page to open in about:blank";
+  noticeBanner.textContent = "Pop-ups are blocked — click anywhere on the page to launch cloaked tab";
   Object.assign(noticeBanner.style, {
     position: "fixed",
     top: "12px",
@@ -46,13 +50,33 @@ function showBlockedBanner() {
   document.body.appendChild(noticeBanner);
 }
 
-function launchAboutBlank(showAlert) {
-  if (inFrame || hasLaunched || navigator.userAgent.includes("Firefox")) {
+function launchCloakedTab(showAlert) {
+  if (inFrame || hasLaunched) {
     return true;
   }
 
-  const popup = window.open("about:blank", "_blank");
+  const title = (window.laceTitle || (s => s))(store.get("name") || "My Drive - Google Drive");
+  const icon = absoluteUrl(store.get("icon") || "https://gstatic.com");
+  const targetUrl = cloakHost.location.href;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <title>${title}</title>
+  <link rel="icon" href="${icon}">
+  <style>html,body,iframe{margin:0;padding:0;width:100%;height:100%;border:none;overflow:hidden;}</style>
+</head>
+<body>
+  <iframe src="${targetUrl}"></iframe>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html" });
+  const blobUrl = URL.createObjectURL(blob);
+
+  const popup = window.open(blobUrl, "_blank");
   if (!popup || popup.closed) {
+    URL.revokeObjectURL(blobUrl);
     if (showAlert) {
       alert("Window blocked. Please allow popups for this site.");
     }
@@ -61,48 +85,19 @@ function launchAboutBlank(showAlert) {
 
   hasLaunched = true;
   removeBanner();
-
-  const doc = popup.document;
-  doc.open();
-  doc.write("<!DOCTYPE html><html><head><title>My Drive - Google Drive</title></head><body style='margin:0;overflow:hidden;'></body></html>");
-  doc.close();
-
-  const iframe = doc.createElement("iframe");
-  const link = doc.createElement("link");
-  const script = doc.createElement("script");
-
-  doc.title = (window.laceTitle || (s => s))(store.get("name") || "My Drive - Google Drive");
-  link.rel = "icon";
-  link.href = absoluteUrl(store.get("icon") || "https://gstatic.com");
-
-  iframe.src = cloakHost.location.href;
-  Object.assign(iframe.style, {
-    position: "fixed",
-    inset: "0",
-    border: "none",
-    outline: "none",
-    width: "100%",
-    height: "100%"
-  });
-
-  script.textContent = "window.onbeforeunload = event => { const message = 'Leave Site?'; (event || window.event).returnValue = message; return message; };";
-
-  doc.head.append(link, script);
-  doc.body.appendChild(iframe);
-
   return true;
 }
 
 if (!inFrame) {
   window.addEventListener("load", function () {
     setTimeout(function () {
-      const opened = launchAboutBlank(false);
+      const opened = launchCloakedTab(false);
 
       if (!opened) {
         showBlockedBanner();
 
         function forceOnInteract() {
-          if (launchAboutBlank(false)) {
+          if (launchCloakedTab(false)) {
             window.removeEventListener("pointerdown", forceOnInteract, true);
             window.removeEventListener("click", forceOnInteract, true);
             window.removeEventListener("keydown", forceOnInteract, true);
@@ -150,7 +145,7 @@ if (SplashE) {
 const abBtn = document.getElementById("about-blank-button");
 if (abBtn) {
   abBtn.addEventListener("click", function () {
-    launchAboutBlank(true);
+    launchCloakedTab(true);
   });
 }
 
