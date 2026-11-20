@@ -411,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (inShell()) window.addEventListener("storage", applyCloak);
 
   const DEFAULT_PANIC_KEYS = ["`"];
-  const DEFAULT_PANIC_LINK = "https://classroom.google.com/";
+  const DEFAULT_PANIC_LINK = "https://google.com/";
 
   let panicKeysRaw;
   let panicKeys = DEFAULT_PANIC_KEYS;
