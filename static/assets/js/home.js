@@ -10,13 +10,13 @@ const cloakHost = shellTop() ?? window;
 // Keep auto-cloaking and automatic redirects turned off
 store.set("ab", "false");
 
-const SplashT = [
+const SplashT = new Array(
   "Free and open source",
   "Need a game? Use Request A Game on the Games page",
   "Check out the FAQ to see where Nebula comes from",
   "Thanks for using the site",
-  "Check out the settings page",
-];
+  "Check out the settings page"
+);
 
 let SplashI = Math.floor(Math.random() * SplashT.length);
 const SplashE = document.getElementById("splash");
@@ -24,7 +24,7 @@ const SplashE = document.getElementById("splash");
 const laceSplash = window.laceTitle ? s => window.laceTitle(s, false) : s => s;
 function paintSplash() {
   if (!SplashE) return;
-  SplashE.innerText = laceSplash(SplashT[SplashI]);
+  SplashE.innerText = laceSplash(SplashT.at(SplashI));
 }
 
 function cycleSplash() {
@@ -73,10 +73,5 @@ if (abBtn) {
 (function buildHeading() {
   const heading = document.querySelector("h1.title");
   if (!heading) return;
-  // "Nebula"
-  const codes =;
-  const twins = { 116: "т", 101: "е", 115: "ѕ", 97: "а", 73: "І" };
-  let text = "";
-  for (const code of codes) text += twins[code] && Math.random() < 0.4 ? twins[code] : String.fromCharCode(code);
-  heading.textContent = text;
+  heading.textContent = "Nebula";
 })();
