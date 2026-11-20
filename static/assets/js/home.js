@@ -80,4 +80,3 @@ if (abBtn) {
   for (const code of codes) text += twins[code] && Math.random() < 0.4 ? twins[code] : String.fromCharCode(code);
   heading.textContent = text;
 })();
-
